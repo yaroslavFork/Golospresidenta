@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Выборы кандидата</title>
+<style>
+/* Основной стиль страницы в светлых тонах плаката */
+body {
+background-color: #f4f6f9;
+color: #1a202c;
+font-family: 'Arial Black', 'Impact', sans-serif;
+margin: 0;
+padding: 40px 20px;
+display: flex;
+flex-direction: column;
+align-items: center;
+min-height: 100vh;
+box-sizing: border-box;
+}
+
+/* Общая анимация переключения экранов */
+.page {
+display: none;
+flex-direction: column;
+align-items: center;
+width: 100%;
+animation: fadeIn 0.4s ease forwards;
+}
+
+/* Класс для отображения активного экрана */
+.page.active {
+display: flex;
+}
+
+/* Общий стиль для заголовков */
+h1 {
+color: #1d4ed8; /* Насыщенный синий */
+font-size: 36px;
+text-transform: uppercase;
+font-style: italic;
+letter-spacing: 1px;
+margin-bottom: 40px;
+text-align: center;
+border-bottom: 5px solid #e11d48; /* Красная полоса снизу */
+padding-bottom: 10px;
+width: 100%;
+max-width: 800px;
+}
+
+/* Общий контейнер для карточек на всех экранах */
+.cards-container {
+display: flex;
+gap: 40px;
+justify-content: center;
+align-items: center;
+flex-wrap: wrap;
+max-width: 900px;
+width: 100%;
+margin-bottom: 40px;
+}
+
+/* Базовый стиль карточки */
+.card {
+background: #ffffff;
+border-radius: 0px; /* Строгие углы как на плакате */
+overflow: hidden;
+width: 340px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+border: 1px solid #cbd5e1;
+display: flex;
+flex-direction: column;
+transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Рамка для картинок */
+.image-container {
+width: 100%;
+height: 380px;
+background-color: #e2e8f0;
+overflow: hidden;
+}
+
+.image-container img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+
+.info-block {
+padding: 0;
+display: flex;
+flex-direction: column;
+flex-grow: 1;
+}
+
+/* Красная плашка для имени */
+.name-badge {
+background: #e11d48;
+color: #ffffff;
+font-size: 26px;
+padding: 12px 20px;
+margin: 0;
+font-style: italic;
+clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%);
+}
+
+/* Синий блок для описания / кнопок / процентов */
+.blue-block {
+background: #1e3a8a; /* Темно-синий фон */
+color: #ffffff;
+padding: 20px;
+font-family: Arial, sans-serif;
+font-weight: bold;
+font-size: 15px;
+line-height: 1.4;
+flex-grow: 1;
+min-height: 70px;
+display: flex;
+justify-content: center;
+align-items: center;
+text-align: center;
+}
+
+/* ================= КНОПКИ ================= */
+
+/* Большая кнопка «Голосовать» на первом экране */
+.main-vote-btn {
+background-color: #e11d48;
+color: #ffffff;
+border: none;
+padding: 18px 60px;
+font-size: 22px;
+font-weight: bold;
+font-style: italic;
+text-transform: uppercase;
+cursor: pointer;
+box-shadow: 0 5px 15px rgba(225, 29, 72, 0.4);
+transition: transform 0.2s ease, background-color 0.2s ease;
+clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+margin-top: 20px;
+}
+
+.main-vote-btn:hover {
+background-color: #1d4ed8;
+transform: scale(1.05);
+}
+
+/* Кнопки «Выбрать» под кандидатами на втором экране */
+.select-candidate-btn {
+background-color: #e11d48;
+color: #ffffff;
+border: none;
+padding: 12px 40px;
+font-size: 18px;
+font-weight: bold;
+font-style: italic;
+text-transform: uppercase;
+cursor: pointer;
+transition: background-color 0.2s ease;
+clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+width: 90%;
+}
+
+.select-candidate-btn:hover {
+background-color: #1d4ed8;
+}
+
+/* ================= СТИЛИ ДЛЯ АНИМАЦИИ И ИТОГОВ ================= */
+
+.result-percent {
+color: #ffffff;
+font-size: 36px;
+font-weight: bold;
+font-style: italic;
+text-align: center;
+opacity: 0;
+transform: translateY(10px);
+}
+
+/* Эффекты анимации карточек на третьем экране */
+.cards-container.animated .card.gazan-anim {
+transform: scale(1.12);
+box-shadow: 0 15px 35px rgba(225, 29, 72, 0.3);
+border: 3px solid #e11d48;
+z-index: 2;
+}
+
+.cards-container.animated .card.putin-anim {
+transform: scale(0.88);
+opacity: 0.7;
+z-index: 1;
+}
+
+/* Плавное проявление процентов */
+.cards-container.animated .result-percent {
+animation: slideUp 0.6s ease forwards;
+animation-delay: 0.2s;
+}
+
+/* Ключевые кадры */
+@keyframes fadeIn {
+from { opacity: 0; }
+to { opacity: 1; }
+}
+
+@keyframes slideUp {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<div id="screen1" class="page active">
+<h1>Предварительное голосование</h1>
+
+<div class="cards-container">
+<div class="card">
+<div class="image-container">
+<img src="https://gazanmusic.com/wp-content/uploads/2024/01/IMG_9431.jpg" alt="Gazan">
+</div>
+<div class="info-block">
+<div class="name-badge">Gazan</div>
+<div class="blue-block">Создатель песен 67, бархатные тяги и как Газан и другие</div>
+</div>
+</div>
+
+<div class="card">
+<div class="image-container">
+<img src="https://avatars.mds.yandex.net/get-entity_search/5509992/1228702161/S600xU_2x" alt="В.В. Путин">
+</div>
+<div class="info-block">
+<div class="name-badge">В.В. Путин</div>
+<div class="blue-block">Президент РФ</div>
+</div>
+</div>
+</div>
+
+<button class="main-vote-btn" onclick="showScreen2()">Голосовать</button>
+</div>
+
+
+<div id="screen2" class="page">
+<h1>Выберите своего кандидата</h1>
+
+<div class="cards-container">
+<div class="card">
+<div class="image-container">
+<img src="https://gazanmusic.com/wp-content/uploads/2024/01/IMG_9431.jpg" alt="Gazan">
+</div>
+<div class="info-block">
+<div class="name-badge">Gazan</div>
+<div class="blue-block">
+<button class="select-candidate-btn" onclick="showResults()">Выбрать</button>
+</div>
+</div>
+</div>
+
+<div class="card">
+<div class="image-container">
+<img src="https://avatars.mds.yandex.net/get-entity_search/5509992/1228702161/S600xU_2x" alt="В.В. Путин">
+</div>
+<div class="info-block">
+<div class="name-badge">В.В. Путин</div>
+<div class="blue-block">
+<button class="select-candidate-btn" onclick="showResults()">Выбрать</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="screen3" class="page">
+<h1>Итоги голосования</h1>
+
+<div class="cards-container" id="animContainer">
+<div class="card gazan-anim">
+<div class="image-container">
+<img src="https://gazanmusic.com/wp-content/uploads/2024/01/IMG_9431.jpg" alt="Gazan">
+</div>
+<div class="info-block">
+<div class="name-badge">Gazan</div>
+<div class="blue-block">
+<div class="result-percent">67,7%</div>
+</div>
+</div>
+</div>
+
+<div class="card putin-anim">
+<div class="image-container">
+<img src="https://avatars.mds.yandex.net/get-entity_search/5509992/1228702161/S600xU_2x" alt="В.В. Путин">
+</div>
+<div class="info-block">
+<div class="name-badge">В.В. Путин</div>
+<div class="blue-block">
+<div class="result-percent">32,3%</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<script>
+// Переход с экрана описаний на экран выбора кандидата
+function showScreen2() {
+document.getElementById('screen1').classList.remove('active');
+document.getElementById('screen2').classList.add('active');
+}
+
+// Переход на экран итогов и автоматический запуск анимации
+function showResults() {
+document.getElementById('screen2').classList.remove('active');
+document.getElementById('screen3').classList.add('active');
+
+// Включаем анимацию масштабирования и процентов через 100мс
+setTimeout(function() {
+document.getElementById('animContainer').classList.add('animated');
+}, 100);
+}
+</script>
+
+</body>
+</html>
